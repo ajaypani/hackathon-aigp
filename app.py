@@ -1,14 +1,15 @@
 import os
+import logging
 from flask import Flask, render_template, request
-import openai
-import os
 import openai
 from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 
-
-
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # configure OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -65,7 +66,7 @@ def get_response(instructions, previous_questions_and_answers, new_question):
 
 def get_moderation(question):
     """
-    Check the question is safe to ask the model
+    Check if the question is safe to ask the model
 
     Parameters:
         question (str): The question to check
@@ -81,7 +82,7 @@ def get_moderation(question):
         "sexual/minors": "Sexual content that includes an individual who is under 18 years old.",
         "violence": "Content that promotes or glorifies violence or celebrates the suffering or humiliation of others.",
         "violence/graphic": "Violent content that depicts death, violence, or serious physical injury in extreme graphic detail.",
-        "medical error":"System: I strive to provide accurate medical information, but I may occasionally make mistakes. If you notice any errors or have concerns about my responses, please let me know.Please remember that I am an AI assistant and not a substitute for professional medical advice. Always consult a healthcare professional for personalized recommendations and treatment plans.Your feedback is valuable in helping me improve. Thank you for understanding."
+        "medical error": "System: I strive to provide accurate medical information, but I may occasionally make mistakes. If you notice any errors or have concerns about my responses, please let me know. Please remember that I am an AI assistant and not a substitute for professional medical advice. Always consult a healthcare professional for personalized recommendations and treatment plans. Your feedback is valuable in helping me improve. Thank you for understanding."
     }
     response = openai.Moderation.create(input=question)
     if response.results[0].flagged:
@@ -93,44 +94,40 @@ def get_moderation(question):
         ]
         return result
     return None
-from flask import Flask
 
 app = Flask(__name__, template_folder='templates')
-#app = Flask(__name__)
+
 @app.route("/")
 def home():
-    #return 'hello'
+    logger.info("Rendering home page")
     return render_template('index.html')
-
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    # os.system("cls" if os.name == "nt" else "clear")
+    new_question = request.form.get("question")
+    logger.info("Received new question: %s", new_question)
+
     # keep track of previous questions and answers
     previous_questions_and_answers = []
-    while True:
-        # new_question = input("What can I get you?: ")
-        new_question = request.form.get("question")
-        # check the question is safe
-        errors = get_moderation(new_question)
-        if errors:
-            # print("Sorry, you're question didn't pass the moderation check:")
-            # for error in errors:
-            error_messages = [
-                error
-                for error in errors
-            ]
-            #     print(error)
-            # continue
-            return {"response": "Sorry, your question didn't pass the moderation check:", "errors": error_messages}
-        response = get_response(INSTRUCTIONS, previous_questions_and_answers, new_question)
 
-        # add the new question and answer to the list of previous questions and answers
-        previous_questions_and_answers.append((new_question, response))
+    # check the question is safe
+    errors = get_moderation(new_question)
+    if errors:
+        error_messages = [
+            error
+            for error in errors
+        ]
+        logger.warning("Question failed moderation check: %s", new_question)
+        logger.warning("Moderation errors: %s", error_messages)
+        return {"response": "Sorry, your question didn't pass the moderation check:", "errors": error_messages}
 
-        # print the response
-        return ("Here you go: ",response)
-        
+    response = get_response(INSTRUCTIONS, previous_questions_and_answers, new_question)
+    logger.info("Generated response: %s", response)
+
+    # add the new question and answer to the list of previous questions and answers
+    previous_questions_and_answers.append((new_question, response))
+
+    return {"response": response}
+
 if __name__ == "__main__":
     app.run(debug=True)
-
