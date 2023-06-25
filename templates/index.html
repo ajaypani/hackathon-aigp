@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Care Assistant</title>
+</head>
+<body>
+    <h1>Health Care Assistant</h1>
+    <form id="chatForm" action="/chat" method="post">
+        <input type="text" name="question" placeholder="Ask your question..." required>
+        <button type="submit">Send</button>
+    </form>
+    <div id="chatContainer"></div>
+
+    <script>
+        const form = document.getElementById('chatForm');
+        const chatContainer = document.getElementById('chatContainer');
+    
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const question = e.target.question.value.trim();
+    
+            if (question !== '') {
+                addMessage('user', question);
+                e.target.question.value = '';
+    
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        question: question,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const response = data.response;
+                        addMessage('assistant', response);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    
+        function addMessage(role, content) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message', role);
+            messageContainer.textContent = content;
+            chatContainer.appendChild(messageContainer);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        input[type='text'] {
+            width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        button[type='submit'] {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user {
+            text-align: right;
+        }
+
+        .assistant {
+            text-align: left;
+        }
+    </style>
+</body>
+</html>
