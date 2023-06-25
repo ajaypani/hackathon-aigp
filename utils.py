@@ -1,30 +1,20 @@
 import os
-import logging
-
-import openai
 from flask import Flask, render_template, request
+import openai
+import os
+import openai
 from dotenv import load_dotenv
-from utils import get_response, get_moderation
+from colorama import Fore, Back, Style
 
-load_dotenv()
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# configure OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-INSTRUCTIONS = """
-Your instructions...
-"""
 
 TEMPERATURE = 0.5
 MAX_TOKENS = 500
 FREQUENCY_PENALTY = 0
 PRESENCE_PENALTY = 0.6
 # limits how many questions we include in the prompt
-MAX_CONTEXT_QUESTIONS = 10
+MAX_CONTEXT_QUESTIONS = 100
 
 def get_response(instructions, previous_questions_and_answers, new_question):
     """Get a response from ChatCompletion
@@ -62,7 +52,7 @@ def get_response(instructions, previous_questions_and_answers, new_question):
 
 def get_moderation(question):
     """
-    Check if the question is safe to ask the model
+    Check the question is safe to ask the model
 
     Parameters:
         question (str): The question to check
@@ -78,7 +68,7 @@ def get_moderation(question):
         "sexual/minors": "Sexual content that includes an individual who is under 18 years old.",
         "violence": "Content that promotes or glorifies violence or celebrates the suffering or humiliation of others.",
         "violence/graphic": "Violent content that depicts death, violence, or serious physical injury in extreme graphic detail.",
-        "medical error": "System: I strive to provide accurate medical information, but I may occasionally make mistakes. If you notice any errors or have concerns about my responses, please let me know. Please remember that I am an AI assistant and not a substitute for professional medical advice. Always consult a healthcare professional for personalized recommendations and treatment plans. Your feedback is valuable in helping me improve. Thank you for understanding."
+        "medical error":"System: I strive to provide accurate medical information, but I may occasionally make mistakes. If you notice any errors or have concerns about my responses, please let me know.Please remember that I am an AI assistant and not a substitute for professional medical advice. Always consult a healthcare professional for personalized recommendations and treatment plans.Your feedback is valuable in helping me improve. Thank you for understanding."
     }
     response = openai.Moderation.create(input=question)
     if response.results[0].flagged:
