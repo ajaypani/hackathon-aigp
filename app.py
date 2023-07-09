@@ -55,6 +55,7 @@ def chat():
         previous_questions_and_answers.append((new_question, response))
 
         # print the response
+        print(str(type(response)))
         return {"response": response}
         
 if __name__ == "_main_":
