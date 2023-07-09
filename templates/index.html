@@ -1,103 +1,65 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='CSS/style.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='CSS/appointment.css')}}">
+    <script type="module" src="{{url_for('static', filename='javascript/app.js')}}"></script>
+    <script type="module" src="{{url_for('static', filename='javascript/script.js')}}"></script>
 <head>
-    <title>Health Care Assistant</title>
+    <meta charset="UTF-8">
+    <title>Health Chatbot</title>
 </head>
 <body>
-    <h1>Health Care Assistant</h1>
-    <form id="chatForm" action="/chat" method="post">
-        <input type="text" name="question" placeholder="Ask your question..." required>
-        <button type="submit">Send</button>
-    </form>
-    <div id="chatContainer"></div>
-
-    <script>
-        const form = document.getElementById('chatForm');
-        const chatContainer = document.getElementById('chatContainer');
-    
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const question = e.target.question.value.trim();
-    
-            if (question !== '') {
-                addMessage('user', question);
-                e.target.question.value = '';
-    
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        question: question,
-                    }),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        const response = data.response;
-                        addMessage('assistant', response);
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-            }
-        });
-    
-        function addMessage(role, content) {
-            const messageContainer = document.createElement('div');
-            messageContainer.classList.add('message', role);
-            messageContainer.textContent = content;
-            chatContainer.appendChild(messageContainer);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-    </script>
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        form {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        input[type='text'] {
-            width: 400px;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-
-        button[type='submit'] {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background-color: #4caf50;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .message {
-            margin-bottom: 10px;
-        }
-
-        .user {
-            text-align: right;
-        }
-
-        .assistant {
-            text-align: left;
-        }
-    </style>
+    <nav class="navbar navbar-dark bg-primary fixed-top bg-dark" id="nav">
+        <div class="container">
+            <center>
+                <a href="/" target="_self" class="navbar-brand-center">
+                    <img src="{{url_for('static', filename='images/ai-gp-logo.png')}}" class="logo lazyLoad isLoaded" title="HealthGP" style="width: 20%; height: 30%;">
+                </a>
+            </center>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="center">
+            <div class="btn-group" style="width:100%">
+                <button style="width:30%" onclick="myFunction()" class="appointments">
+                    <img src="{{url_for('static', filename='images/booking.png')}}" alt="booking" style="width: 10%; height: 10%;">
+                    <figcaption>Booking Appointments</figcaption>
+                </button>
+                <button style="width:30%" >
+                    <img src="{{url_for('static', filename='images/diet.png')}}" alt="booking" style="width: 10%; height: 10%;">
+                    <figcaption>Diet and Exercise Planning</figcaption>
+                </button>
+                <button style="width:30%" type="button" class="chatbox__button">
+                    <img src="{{url_for('static', filename='images/doctor.png')}}" alt="booking" style="width: 10%; height: 10%;">
+                    <figcaption>Reviewing and Reporting Symptoms</figcaption>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="chatbox">
+            <div class="chatbox__support">
+                <div class="chatbox__header">
+                    <div class="chatbox__image--header">
+                        <img src="https://img.icons8.com/color/48/000000/circled-user-female-skin-type-5--v1.png" alt="image">
+                    </div>
+                    <div class="chatbox__content--header">
+                        <h4 class="chatbox__heading--header">Chat support</h4>
+                        <p class="chatbox__description--header">Hi.I am AI-GP. How can I help you?</p>
+                    </div>
+                </div>
+                <div class="chatbox__messages" action="/chat" method="post">
+                    <div></div>
+                </div>
+                <div class="chatbox__footer">
+                    <input type="text" name="question" placeholder="Write a message...">
+                    <button class="chatbox__send--footer send__button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

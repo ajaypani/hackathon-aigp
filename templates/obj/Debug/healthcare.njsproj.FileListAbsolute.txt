@@ -1,0 +1,3 @@
+C:\Users\David Nereekshan\source\repos\healthcare\healthcare\obj\Debug\healthcare.njsproj.AssemblyReference.cache
+C:\Users\David Nereekshan\source\repos\healthcare\healthcare\obj\Debug\healthcare.njsproj.CoreCompileInputs.cache
+C:\Users\David Nereekshan\source\repos\healthcare\healthcare\bin\Microsoft.NodejsTools.WebRole.dll
